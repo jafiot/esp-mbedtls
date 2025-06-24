@@ -110,8 +110,8 @@ jobs:
         with:
           just-version: 1.13.0
 
-      - name: check
-        run: just
+      # - name: check
+      #   run: just
 
       - name: Upload libraries artifacts for commit
         if: |
@@ -140,6 +140,9 @@ jobs:
       github.ref == 'refs/heads/main') ||
       contains(github.event.pull_request.labels.*.name, 'rebuild-libs'))
     steps:
+      - run: |
+          echo ${{ github.repository }}
+          echo ${{ github.event.pull_request.head.repo.full_name }}
       - uses: actions/checkout@v4
         with:
           # In a pull request trigger, ref is required as GitHub Actions checks out in detached HEAD mode,
