@@ -1,0 +1,36 @@
+name: Manual Push libs
+on:
+  workflow_dispatch:
+    inputs:
+      pr_ref:
+        description: "PR branch ref (e.g. username:feature-branch)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  push-libs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.pr_ref }}
+          repository: ${{ github.repository }}
+
+      - name: Download library artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: esp-mbedtls-sys
+          path: esp-mbedtls-sys/
+
+      - name: Commit and push libraries
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add esp-mbedtls-sys/libs
+          git add esp-mbedtls-sys/src
+          git diff --cached --quiet || (
+            git commit -m "chore: push libs (manual trigger)"
+            git push origin HEAD
+          )
